@@ -98,13 +98,10 @@ def GetCatalogueFrom1IDM(BASE_URL,cookie)
     }
     if(result)
     {
-
         log("GetCatalogFrom1IDM | Запрос выполнен успешно");
     }
     restClient.shutdown();
     return result
-
-
 }
 
 void SearchNSDBRItem(CatalogueData1IDM,BRFQN)
@@ -193,16 +190,16 @@ def UpdateNSDBRItem(NSDBR,BRValues,BRFQN)
     return  UpdatedBR
 }
 
-def CreateIDMInc(BASE_URL,cookie,Role_idHolder,PersonOrdered,SC_UUID)
+def CreateIDMInc(BASE_URL,cookie,Role_idHolder,LNR,SC_UUID)
 {
-    def url = "${BASE_URL}/appServer/api/script/test_CreatePWO";
+    def url = "${BASE_URL}/appServer/api/script/CCC_Naumen_CreateRequestInITShop";
     def restClient = new groovyx.net.http.RESTClient();
     // таймаут на чтение
     restClient.getClient().getParams().setParameter('http.socket.timeout', 10000)
     // таймаут на установку соединения
     restClient.getClient().getParams().setParameter('http.connection.timeout', 10000)
     // формируем тело запроса
-    def body=["values" : ["UID_Org=${Role_idHolder};PersonOrdered=${PersonOrdered};OrderDetail1=${SC_UUID}"]]
+    def body=["parameters" : [Role_idHolder,LNR,SC_UUID]]
 
     body = JsonOutput.toJson(body)
     // выполняем запрос
@@ -212,7 +209,7 @@ def CreateIDMInc(BASE_URL,cookie,Role_idHolder,PersonOrdered,SC_UUID)
         def response = restClient.put(['uri': url, 'headers' : cookie, 'requestContentType' :  groovyx.net.http.ContentType.JSON, 'body': body]);
         if(response.status == 200)
         {
-            result = response.result
+            result = response.data.result
 
         }
         else
@@ -226,7 +223,7 @@ def CreateIDMInc(BASE_URL,cookie,Role_idHolder,PersonOrdered,SC_UUID)
     }
     if(result)
     {
-        log("CreateIDMInc | ${result.result.toString()}");
+        log("CreateIDMInc | ${result.toString()}");
     }
     restClient.shutdown();
     return result
